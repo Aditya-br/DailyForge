@@ -8,6 +8,7 @@ const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   // useNavigate object
   const navigate = useNavigate();
@@ -19,6 +20,9 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     // prevents page from refreshing
     e.preventDefault();
+    
+    // clear any previous error messages
+    setErrorMessage("");
 
     // send request to server
     try {
@@ -43,6 +47,13 @@ const Signup = () => {
       // handle error
       console.log("Signup failed");
       console.log(error.response?.data || error.message);
+      
+      // check for 409 conflict (user already exists)
+      if (error.response?.status === 409) {
+        setErrorMessage("An account with this email already exists. Please try logging in instead.");
+      } else {
+        setErrorMessage("Signup failed. Please try again.");
+      }
     }
   };
 
@@ -60,6 +71,12 @@ const Signup = () => {
       <div className="text-center space-y-1 mb-3">
         <h1 className="text-3xl font-bold text-main">Signup</h1>
       </div>
+
+      {errorMessage && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
+          {errorMessage}
+        </div>
+      )}
 
       <div className="flex flex-col gap-1.5">
         <label htmlFor="name" className="text-sm font-medium text-main">
