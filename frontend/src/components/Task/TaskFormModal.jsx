@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 
 const priorities = ["Low", "Medium", "High"];
 
-export default function TaskFormModal({ task, onClose, onSubmit }) {
+export default function TaskFormModal({ task, onClose, onSubmit, errorMessage, onError }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
@@ -20,21 +20,28 @@ export default function TaskFormModal({ task, onClose, onSubmit }) {
       setDueDate(task.dueDate ? task.dueDate.split("T")[0] : "");
       /* eslint-enable react-hooks/set-state-in-effect */
     }
-  }, [task]);
+    onError?.("");
+  }, [task, onError]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!title.trim()) return alert("Title is required");
-    if (!priority) return alert("Priority is required");
-    if (!dueDate) return alert("Due date is required");
+    onError?.("");
+    if (!title.trim()) return onError?.("Title is required");
+    if (!priority) return onError?.("Priority is required");
+    if (!dueDate) return onError?.("Due date is required");
 
-    onSubmit({
-      title: title.trim(),
-      description: description.trim(),
-      tags: tags.trim(),
-      priority,
-      dueDate,
-    });
+    try {
+      await onSubmit({
+        title: title.trim(),
+        description: description.trim(),
+        tags: tags.trim(),
+        priority,
+        dueDate,
+      });
+    } catch (error) {
+      console.error(error);
+      onError?.(error.message || "Failed to save task");
+    }
   };
 
   return (
@@ -51,6 +58,12 @@ export default function TaskFormModal({ task, onClose, onSubmit }) {
         <h2 className="text-xl font-semibold text-main mb-4">
           {task ? "Edit Task" : "New Task"}
         </h2>
+
+        {errorMessage && (
+          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {errorMessage}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Title */}
