@@ -39,7 +39,7 @@ const Signup = () => {
 
       // get user details
       const me = await api.get("/auth/me");
-      setUser(me.data);
+      setUser(me.data.user);
 
       // redirect to dashboard
       navigate("/dashboard");
@@ -52,7 +52,7 @@ const Signup = () => {
       if (error.response?.status === 409) {
         setErrorMessage("An account with this email already exists. Please try logging in instead.");
       } else {
-        setErrorMessage(error.response?.data?.message || "Signup failed. Please try again.");
+        setErrorMessage("Signup failed. Please try again.");
       }
     }
   };

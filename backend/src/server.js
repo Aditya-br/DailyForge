@@ -13,22 +13,10 @@ const PORT = process.env.PORT;
 // Initialize express app
 const app = express();
 
-// Intialize cors
-const allowedOrigins = [
-  "https://dailyforge-frontend-lhjq.onrender.com", // production
-  "http://localhost:5173", // development frontend
-  "http://127.0.0.1:5173", // alternative localhost
-];
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("CORS not allowed"));
-      }
-    },
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
